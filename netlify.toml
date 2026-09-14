@@ -21,6 +21,16 @@
   status = 200
 
 [[redirects]]
+  from = "/api/integrations"
+  to = "/.netlify/functions/integrations-status"
+  status = 200
+
+[[redirects]]
+  from = "/api/whatsapp/send"
+  to = "/.netlify/functions/whatsapp"
+  status = 200
+
+[[redirects]]
   from = "/api/webhook"
   to = "/.netlify/functions/webhook"
   status = 200
