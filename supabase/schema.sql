@@ -1,3 +1,5 @@
+-- Run this entire file as one transaction. Existing rows are preserved.
+begin;
 -- Lucas Marketing AI v2 — Supabase
 create extension if not exists pgcrypto;
 create table if not exists public.organizations(id uuid primary key default gen_random_uuid(),name text not null,slug text unique,created_at timestamptz not null default now(),updated_at timestamptz not null default now());
@@ -21,14 +23,25 @@ create or replace function public.bootstrap_new_user() returns trigger language 
 drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created after insert on auth.users for each row execute function public.bootstrap_new_user();
 alter table public.organizations enable row level security;alter table public.memberships enable row level security;alter table public.clients enable row level security;alter table public.projects enable row level security;alter table public.content_items enable row level security;alter table public.leads enable row level security;alter table public.conversations enable row level security;alter table public.messages enable row level security;alter table public.automations enable row level security;alter table public.integrations enable row level security;alter table public.webhook_events enable row level security;alter table public.app_state enable row level security;alter table public.audit_logs enable row level security;
+drop policy if exists "org_read" on public.organizations;
 create policy "org_read" on public.organizations for select using(public.is_org_member(id));
+drop policy if exists "org_update_admin" on public.organizations;
 create policy "org_update_admin" on public.organizations for update using(public.has_org_role(id,array['owner','admin'])) with check(public.has_org_role(id,array['owner','admin']));
+drop policy if exists "membership_read" on public.memberships;
 create policy "membership_read" on public.memberships for select using(public.is_org_member(org_id));
+drop policy if exists "membership_admin" on public.memberships;
 create policy "membership_admin" on public.memberships for all using(public.has_org_role(org_id,array['owner','admin'])) with check(public.has_org_role(org_id,array['owner','admin']));
-do $$declare t text;begin foreach t in array array['clients','projects','content_items','leads','conversations','automations','integrations'] loop execute format('create policy %I on public.%I for select using(public.is_org_member(org_id))',t||'_read',t);execute format('create policy %I on public.%I for insert with check(public.has_org_role(org_id,array[''owner'',''admin'',''strategist'',''member'']))',t||'_insert',t);execute format('create policy %I on public.%I for update using(public.has_org_role(org_id,array[''owner'',''admin'',''strategist'',''member''])) with check(public.has_org_role(org_id,array[''owner'',''admin'',''strategist'',''member'']))',t||'_update',t);execute format('create policy %I on public.%I for delete using(public.has_org_role(org_id,array[''owner'',''admin'']))',t||'_delete',t);end loop;end$$;
+do $$declare t text;begin foreach t in array array['clients','projects','content_items','leads','conversations','automations','integrations'] loop execute format('drop policy if exists %I on public.%I',t||'_read',t);execute format('create policy %I on public.%I for select using(public.is_org_member(org_id))',t||'_read',t);execute format('drop policy if exists %I on public.%I',t||'_insert',t);execute format('create policy %I on public.%I for insert with check(public.has_org_role(org_id,array[''owner'',''admin'',''strategist'',''member'']))',t||'_insert',t);execute format('drop policy if exists %I on public.%I',t||'_update',t);execute format('create policy %I on public.%I for update using(public.has_org_role(org_id,array[''owner'',''admin'',''strategist'',''member''])) with check(public.has_org_role(org_id,array[''owner'',''admin'',''strategist'',''member'']))',t||'_update',t);execute format('drop policy if exists %I on public.%I',t||'_delete',t);execute format('create policy %I on public.%I for delete using(public.has_org_role(org_id,array[''owner'',''admin'']))',t||'_delete',t);end loop;end$$;
+drop policy if exists "messages_read" on public.messages;
 create policy "messages_read" on public.messages for select using(exists(select 1 from public.conversations c where c.id=conversation_id and public.is_org_member(c.org_id)));
+drop policy if exists "messages_insert" on public.messages;
 create policy "messages_insert" on public.messages for insert with check(exists(select 1 from public.conversations c where c.id=conversation_id and public.has_org_role(c.org_id,array['owner','admin','strategist','member'])));
+drop policy if exists "app_state_read" on public.app_state;
 create policy "app_state_read" on public.app_state for select using(public.is_org_member(org_id));
+drop policy if exists "app_state_write" on public.app_state;
 create policy "app_state_write" on public.app_state for all using(public.has_org_role(org_id,array['owner','admin','strategist','member'])) with check(public.has_org_role(org_id,array['owner','admin','strategist','member']));
+drop policy if exists "audit_admin_read" on public.audit_logs;
 create policy "audit_admin_read" on public.audit_logs for select using(public.has_org_role(org_id,array['owner','admin']));
 create index if not exists idx_clients_org on public.clients(org_id);create index if not exists idx_projects_client on public.projects(client_id);create index if not exists idx_content_client on public.content_items(client_id);create index if not exists idx_leads_org_stage on public.leads(org_id,stage);create index if not exists idx_conversations_org on public.conversations(org_id,created_at desc);create index if not exists idx_messages_conversation on public.messages(conversation_id,created_at);create index if not exists idx_audit_org_time on public.audit_logs(org_id,created_at desc);
+
+commit;
