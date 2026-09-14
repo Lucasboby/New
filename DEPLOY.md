@@ -37,3 +37,14 @@ Cadastre `N8N_WEBHOOK_URL` no Netlify. No n8n, armazene credenciais do provedor 
 - `/api/config` deve informar `mode: production` após OpenAI e `DEMO_MODE=false`.
 - Faça login e execute uma pergunta curta ao CMO.
 - Confira limites e logs das Functions antes de liberar clientes.
+
+
+## 6. WhatsApp Cloud API
+
+Cadastre `WHATSAPP_ACCESS_TOKEN`, `WHATSAPP_PHONE_NUMBER_ID` e `META_GRAPH_API_VERSION`. O endpoint de envio só é liberado quando `AUTH_REQUIRED=true` e a sessão Supabase é válida.
+
+A ação fica disponível em **CRM & WhatsApp → Enviar WhatsApp**. Use templates aprovados quando a política da conversa exigir; mensagens livres podem ser recusadas pelo provedor fora da janela permitida.
+
+## 7. Meta Leads e n8n
+
+A automação de dados pessoais não é ativada por padrão. Consulte `SECURITY.md` e defina campos, retenção e destino autorizado antes de implementar a transferência.
