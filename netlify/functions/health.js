@@ -1,0 +1,1 @@
+exports.handler=async()=>({statusCode:200,headers:{"Content-Type":"application/json","Cache-Control":"no-store"},body:JSON.stringify({ok:true,service:"lucas-marketing-ai",version:"2.0.0",time:new Date().toISOString(),openai:Boolean(process.env.OPENAI_API_KEY),database:Boolean(process.env.SUPABASE_URL)})});
