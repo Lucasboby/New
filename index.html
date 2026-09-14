@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#090711">
+  <meta name="description" content="Lucas Marketing AI — departamento de marketing operado por inteligência artificial.">
+  <title>Lucas Marketing AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/styles.css">
+</head>
+<body>
+  <div class="ambient ambient-one"></div><div class="ambient ambient-two"></div>
+  <div id="toast-root" aria-live="polite"></div>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="#dashboard" aria-label="Lucas Marketing AI">
+        <span class="brand-mark">LM</span>
+        <span><strong>Lucas Marketing</strong><small>AI Command Center</small></span>
+      </a>
+      <button class="sidebar-close icon-btn" id="sidebar-close" aria-label="Fechar menu">×</button>
+      <nav class="nav" aria-label="Menu principal">
+        <button data-route="dashboard" class="nav-item active"><span>◫</span> Dashboard</button>
+        <button data-route="agents" class="nav-item"><span>✦</span> Agentes IA <b>20</b></button>
+        <button data-route="clients" class="nav-item"><span>◎</span> Clientes</button>
+        <button data-route="projects" class="nav-item"><span>▣</span> Projetos</button>
+        <button data-route="content" class="nav-item"><span>✎</span> Conteúdo</button>
+        <button data-route="crm" class="nav-item"><span>◇</span> CRM & WhatsApp</button>
+        <button data-route="automations" class="nav-item"><span>⚡</span> Automações</button>
+        <button data-route="analytics" class="nav-item"><span>↗</span> Analytics</button>
+        <button data-route="settings" class="nav-item"><span>⚙</span> Configurações</button>
+      </nav>
+      <div class="sidebar-card">
+        <span class="pulse-dot"></span><small>Status do sistema</small>
+        <strong id="sidebar-status">Modo demonstração</strong>
+        <button class="text-btn" data-route="settings">Configurar integrações →</button>
+      </div>
+      <div class="profile">
+        <div class="avatar">LB</div><div><strong>Lucas Braga</strong><small>Administrador</small></div>
+        <button class="icon-btn" title="Conta">•••</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <button class="menu-btn icon-btn" id="menu-btn" aria-label="Abrir menu">☰</button>
+        <div><p class="eyebrow" id="page-eyebrow">VISÃO GERAL</p><h1 id="page-title">Dashboard</h1></div>
+        <div class="top-actions">
+          <label class="client-switcher"><span>Cliente ativo</span><select id="active-client"></select></label>
+          <button class="btn secondary" id="quick-action">＋ Nova ação</button>
+          <button class="notification icon-btn" aria-label="Notificações">◌<i></i></button>
+        </div>
+      </header>
+      <section id="view" class="view" tabindex="-1"></section>
+    </main>
+  </div>
+
+  <dialog id="modal" class="modal">
+    <form method="dialog" class="modal-card" id="modal-form">
+      <header><div><p class="eyebrow" id="modal-eyebrow">NOVA AÇÃO</p><h2 id="modal-title">Adicionar</h2></div><button class="icon-btn" value="cancel" aria-label="Fechar">×</button></header>
+      <div id="modal-content"></div>
+      <footer><button class="btn ghost" value="cancel">Cancelar</button><button class="btn primary" id="modal-submit" value="default">Salvar</button></footer>
+    </form>
+  </dialog>
+
+  <dialog id="login-modal" class="modal">
+    <form method="dialog" class="modal-card narrow" id="login-form">
+      <header><div><p class="eyebrow">ACESSO SEGURO</p><h2>Entrar na plataforma</h2></div></header>
+      <div class="form-grid one">
+        <label>E-mail<input type="email" name="email" autocomplete="email" required></label>
+        <label>Senha<input type="password" name="password" autocomplete="current-password" minlength="6" required></label>
+        <p class="helper" id="login-message">Use o usuário criado no Supabase.</p>
+      </div>
+      <footer><button class="btn primary full" value="default">Entrar</button></footer>
+    </form>
+  </dialog>
+
+  <template id="loading-template"><div class="loading-state"><span class="spinner"></span><p>Organizando sua estratégia...</p></div></template>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script type="module" src="/assets/app.js"></script>
+</body>
+</html>
